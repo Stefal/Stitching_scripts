@@ -1,10 +1,10 @@
 #!/bin/bash
 i=1
 for dir in */ ; do
-    cp autostitch.sh "${dir}"/autostitch
+    cp autostitch.sh "${dir}"/autostitch.sh
     cd "${dir}"
-    ./autostitch
-    mv default5.jpg "${d%/}".jpg
+    ./autostitch.sh
+    mv default5.jpg "${dir%/}".jpg
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..
     i=$((i + 1))

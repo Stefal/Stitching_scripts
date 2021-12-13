@@ -16,9 +16,11 @@ exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=2 --ldr-file=JPG --ldr-compression=95 --canvas=13340x6670 -o autobase4.pto autobase3.pto
 "${cpfind}" --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto autobase4.pto
 #"${linefind}" --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
-"${cpclean}" -o default3.pto default2.pto
+"${cpclean}" -o default3.pto default1.pto
 "${autooptimiser}" -m -l -n -o default4.pto default3.pto
 "${pano_modify}" --straighten -o default5.pto default4.pto
+sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
+sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
 "${hugin_executor}" default5.pto --stitching
-"${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack default4.jpg -overwrite_original
+"${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack default5.jpg -overwrite_original
 

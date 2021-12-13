@@ -1,0 +1,111 @@
+#!/bin/bash
+
+#sequence faites dans OpenPathView :
+#cpfind", "autooptimiser", "autooptimiser2", "panomodify", "stitchable", "stitch", "photosphere", "tiling"
+
+# A faire :
+
+# créer les lots de photo. Avec un dossier pour chaque
+# copier le .pto dans le dossier.
+
+#   cpfind :
+# binaire : cpfind.exe
+# paramètres : --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300
+# trouver les points de controle
+#cpfind.exe --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 base.pto
+
+#   autooptimiser
+# binaire : autooptimiser.exe
+# paramètres : -a -m -l
+# optimisation du panoramique, un peu comme le bouton align présent dans Hugin
+
+# autooptimiser 2
+# binaire : pto_var
+# paramètres : --opt=y,p,r,v,b
+
+#   panomodify
+# binaire : panomodify / pano_modify.exe
+# paramètres : --output-exposure=AUTO --straighten --fov=360x180 --canvas=13340x6670
+# trouve l'horizon, ajuste le fov et la taille du fichier en sortie
+
+#   stitchable
+# Vérifications propres à OPV, en comptant le nombre de points de controles.
+
+#   stitch
+# binaire: hugin_executor
+# paramètres : 
+
+#   photosphere
+# binaire : exiftool
+# paramètres : -XMP-GPano:ProjectionType=equirectangular -XMP-GPano:FullPanoWidthPixels="+str(width) -XMP-GPano:FullPanoHeightPixels="+str(height)
+#              -exif:gpslatitude -exif:gpslongitude -exif:gpsaltitude - exif:gpsdirection???
+# ajoute les tags Gpano, et récupère les coordonnées et la direction de la photo avant pour les copier vers le panoramique.
+
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default1.pto base2.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --opt=y,p,r,v,b -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -a -m -l -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --straighten --fov=360x180 --canvas=13340x6670 -o default5.pto default4.pto 
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default5.pto --stitching &
+
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default1.pto base2.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --opt=y,p,r -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -a -m -l -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --straighten --fov=360x180 --canvas=13340x6670 -o default5.pto default4.pto 
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default5.pto --stitching
+
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto base2.pto
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\cpclean.exe' -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\vig_optimize.exe' -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -a -m -l -o default5.pto default4.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --straighten --fov=360x180 --canvas=13340x6670 -o default6.pto default5.pto 
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default6.pto --stitching
+
+Rechercher comment avoir une correction correcte de balance des blancs, luminosité, contrastre, etc... > vig_optimize
+
+& 'C:\Program Files\Hugin\bin\pto_gen.exe' --projection=3 --fov=125 --stacklength=1 --output=autobase.pto .\APN0.jpg .\APN1.jpg .\APN2.jpg .\APN3.jpg .\APN4.jpg .\APN5.jpg
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --set-from-file .\pto_variable.txt --opt=Eev,r0,p0,y0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o autobase2.pto .\autobase.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto autobase2.pto
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\cpclean.exe' -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\vig_optimize.exe' -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -a -m -l -o default5.pto default4.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --output-range-compression=3 --canvas=13340x6670 -o default6.pto default5.pto 
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default6.pto --stitching
+
+& 'C:\Program Files\Hugin\bin\pto_gen.exe' --projection=3 --fov=125 --stacklength=1 --output=autobase.pto .\APN0.jpg .\APN1.jpg .\APN2.jpg .\APN3.jpg .\APN4.jpg .\APN5.jpg
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --set-from-file .\pto_variable.txt --opt=Eev,Er,Eb,r0,p0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o autobase2.pto .\autobase.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto autobase2.pto
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\cpclean.exe' -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\vig_optimize.exe' -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe'-a -m -l -o default5.pto default4.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --output-range-compression=3 --canvas=13340x6670 -o default6.pto default5.pto 
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default6.pto --stitching
+
+& 'C:\Program Files\Hugin\bin\pto_gen.exe' --projection=3 --fov=125 --stacklength=1 --output=autobase.pto .\APN0.jpg .\APN1.jpg .\APN2.jpg .\APN3.jpg .\APN4.jpg .\APN5.jpg
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --set-from-file .\pto_variable.txt --opt=Eev,Er,Eb,r0,p0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o autobase2.pto .\autobase.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto autobase2.pto
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\cpclean.exe' -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -a -m -l -n -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --opt=Eev,Er,Eb,r0,p0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o default5.pto default4.pto
+& 'C:\Program Files\Hugin\bin\vig_optimize.exe' -o default6.pto default5.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --output-range-compression=3 --canvas=13340x6670 -o default7.pto default6.pto
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default7.pto --stitching
+
+#La version ci-dessus fonctionne pas mal pour les couleurs et l'exposition, mais pas vraiment pour la géométrie où la ligne autooptimiser n'ajuste pas le fov de chaque caméra
+
+& 'C:\Program Files\Hugin\bin\pto_gen.exe' --projection=3 --fov=125 --stacklength=1 --output=autobase.pto .\APN0.jpg .\APN1.jpg .\APN2.jpg .\APN3.jpg .\APN4.jpg .\APN5.jpg
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --set-from-file .\pto_variable.txt --opt=Eev,r0,p0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o autobase2.pto .\autobase.pto
+& 'C:\Program Files\Hugin\bin\pto_var.exe' --set-from-file .\pto_variable.txt --opt=Er1,Eb1,Er2,Eb2,Er3,Eb3,Er4,Eb4,Er5,Eb5,r0,p0,v0,v,a,b,c --modify-opt --unlink=v0,Ra0,Rb0,Rc0,Rd0,Re0,a0,b0,c0,d0,g0,t0,Va0,Vb0,Vc0,Vd0,Vx0,Vy0 -o autobase3.pto .\autobase2.pto
+& 'C:\Program Files\Hugin\bin\pano_modify.exe' --output-exposure=AUTO --output-range-compression=3 --canvas=13340x6670 -o autobase4.pto autobase3.pto
+& 'C:\Program Files\Hugin\bin\cpfind.exe' --prealigned --sieve1width 25 --sieve1height 25 --sieve1size 625 --kdtreesteps 300 -o default1.pto autobase4.pto
+& 'C:\Program Files\Hugin\bin\linefind.exe' --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
+& 'C:\Program Files\Hugin\bin\cpclean.exe' -o default3.pto default2.pto
+& 'C:\Program Files\Hugin\bin\autooptimiser.exe' -m -l -n -o default4.pto default3.pto
+& 'C:\Program Files\Hugin\bin\hugin_executor.exe' .\default4.pto --stitching
+
+# Bon, ça m'a l'air pas tout mal.

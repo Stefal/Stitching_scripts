@@ -4,7 +4,7 @@ for dir in */ ; do
     cp autostitch.sh "${dir}"/autostitch.sh
     cd "${dir}"
     ./autostitch.sh
-    mv default5.jpg "${dir%/}".jpg
+    mv final.jpg "${dir%/}".jpg
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..
     i=$((i + 1))

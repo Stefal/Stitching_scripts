@@ -1,10 +1,13 @@
 #!/bin/bash
+
+S_PATH="$(realpath "$(dirname $0)")"
 i=1
 for dir in */ ; do
-    cp autostitch.sh "${dir}"/autostitch.sh
+    cp "${S_PATH}"/autostitch.sh "${dir}"/autostitch.sh
     cd "${dir}"
     ./autostitch.sh
     mv final.jpg "${dir%/}".jpg
+    ls -lht
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..
     i=$((i + 1))

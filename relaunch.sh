@@ -7,7 +7,7 @@ for dir in $(find . -maxdepth 2 -type f -name "default5.pto" -newermt '1 hour ag
     echo $(dirname $dir)
     cd $(dirname $dir)
     "${hugin_executor}" default5.pto --stitching
-    "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack default5.jpg -overwrite_original
+    "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
     mv final.jpg "${dir%/}".jpg
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..

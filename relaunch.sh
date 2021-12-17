@@ -3,12 +3,13 @@ hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
 exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
 i=1
 
-for dir in $(find . -maxdepth 2 -type f -name "default5.pto" -newermt '1 hour ago') ; do
+for dir in $(find . -maxdepth 2 -type f -name "default5.pto" -newermt '2 hour ago') ; do
     echo $(dirname $dir)
     cd $(dirname $dir)
-    "${hugin_executor}" default5.pto --stitching
+    "${hugin_executor}" final.pto --stitching
     "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
-    mv final.jpg "${dir%/}".jpg
+	newname=$(dirname $dir | cut -c3-)
+    mv final.jpg "${newname}".jpg
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..
     i=$((i + 1))

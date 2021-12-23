@@ -3,7 +3,7 @@ hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
 exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
 i=1
 
-for dir in $(find . -maxdepth 2 -type f -name "default5.pto" -newermt '2 hour ago') ; do
+for dir in $(find . -maxdepth 2 -type f -name "final.pto" -newermt '2 hour ago') ; do
     echo $(dirname $dir)
     cd $(dirname $dir)
     "${hugin_executor}" final.pto --stitching

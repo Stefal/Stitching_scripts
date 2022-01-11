@@ -26,4 +26,4 @@ sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
 sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=95 --canvas=13340x6670 -o final.pto default5.pto
 "${hugin_executor}" final.pto --stitching
-"${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
+"${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original

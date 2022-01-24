@@ -128,6 +128,9 @@ class Cam_Infos:
             except KeyError as e:
                 # if any of the required tags are not set the image is not added to the list
                 print("Skipping {0}: {1}".format(filepath, e))
+            except Exception as e:
++               print("Exception on file ", filepath, e)
++               sys.exit()
 
         files.sort(key=lambda file: file.DateTimeOriginal)
         # print_list(files)

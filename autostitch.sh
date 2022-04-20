@@ -24,9 +24,11 @@ exiftool=$(which exiftool)
 pto_lensstack=$(which pto_lensstack)
 vig_optimize=$(which vig_optimize)
 
+#use these Y/P/R variables to rotate the pano
 Yaw=0
 Pitch=0
 Roll=0
+
 Vb_Count=0
 Ev_Count=0
 Vb_max=6
@@ -34,6 +36,7 @@ Fov_max=130
 Fov_mini=120
 
 check_Vb() {
+# Check if the Vb value in the final.pto file is too high or too low
 file="${1}"
 export LC_NUMERIC=C
 awk -v max=$2 -v min=$3 '/^i/ {for(i=1; i<=NF; i++) {if($i ~ "Vb") {gsub(/Vb/,"") ; {if( $i > max || $i < min ) print $i , err=1}}}} END {exit err}' "${file}"
@@ -42,6 +45,7 @@ awk -v max=$2 -v min=$3 '/^i/ {for(i=1; i<=NF; i++) {if($i ~ "Vb") {gsub(/Vb/,""
 }
 
 check_Fov() {
+# Check if the Fov value is too low or too high, meaning there is a problem in the pano.
 file="${1}"
 export LC_NUMERIC=C
 awk -v max=$2 -v min=$3 '/^i/ {if(substr($5,2) > max || substr($5,2) < min) print $5 , err=1} END {exit err}' "${file}"
@@ -61,13 +65,14 @@ awk -v max=$2 -v min=$3 '/^i/ {if(substr($5,2) > max || substr($5,2) < min) prin
 sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
 sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto default5.pto
+
 #Try to fix lens exposure when Vb is too high
 while ! check_Vb final.pto $Vb_max $((-Vb_max))
 do
     "${vig_optimize}" -o final.pto final.pto
     "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto final.pto
     ((Vb_Count=Vb_Count+1))
-    touch please_check_mini.txt
+    touch please_check_mini
     echo 'Vb_Count: ' $Vb_Count
     if [ $Vb_Count -gt 5 ]
         then
@@ -78,7 +83,7 @@ do
             then
             "${pto_var}" --set=Eev=0,Vb=0,Vc=0,Vd=0 -o final.pto final.pto
             echo 'Reset Eev, Vb, Vc, Vd'
-            touch please_check_high.txt
+            touch please_check_high
         fi
         "${vig_optimize}" -o final.pto final.pto
         "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto final.pto
@@ -86,6 +91,7 @@ do
         ((Ev_Count=Ev_Count+1))
     fi
 done
-check_Fov final.pto $Fov_max $Fov_min || touch check_fov.txt
+
+check_Fov final.pto $Fov_max $Fov_min || touch check_fov
 "${hugin_executor}" final.pto --stitching
 "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original

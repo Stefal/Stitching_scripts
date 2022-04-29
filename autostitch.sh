@@ -1,28 +1,32 @@
 #!/bin/bash
 
-#pto_gen='/mnt/c/Program Files/Hugin/bin/pto_gen.exe'
-#pto_var='/mnt/c/Program Files/Hugin/bin/pto_var.exe'
-#pano_modify='/mnt/c/Program Files/Hugin/bin/pano_modify.exe'
-#cpfind='/mnt/c/Program Files/Hugin/bin/cpfind.exe'
-#linefind='/mnt/c/Program Files/Hugin/bin/linefind.exe'
-#cpclean='/mnt/c/Program Files/Hugin/bin/cpclean.exe'
-#autooptimiser='/mnt/c/Program Files/Hugin/bin/autooptimiser.exe'
-#hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
-#exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
-#pto_lensstack='/mnt/c/Program Files/Hugin/bin/pto_lensstack.exe'
-#vig_optimize='/mnt/c/Program Files/Hugin/bin/vig_optimize.exe'
-
-pto_gen=$(which pto_gen)
-pto_var=$(which pto_var)
-pano_modify=$(which pano_modify)
-cpfind=$(which cpfind)
-linefind=$(which linefind)
-cpclean=$(which cpclean)
-autooptimiser=$(which autooptimiser)
-hugin_executor=$(which hugin_executor)
-exiftool=$(which exiftool)
-pto_lensstack=$(which pto_lensstack)
-vig_optimize=$(which vig_optimize)
+# Detect if we use WSL. If yes, use the Hugin windows release
+if [ $(uname -r | sed -n 's/.*\( *Microsoft *\).*/\1/ip') ];
+then
+    pto_gen='/mnt/c/Program Files/Hugin/bin/pto_gen.exe'
+    pto_var='/mnt/c/Program Files/Hugin/bin/pto_var.exe'
+    pano_modify='/mnt/c/Program Files/Hugin/bin/pano_modify.exe'
+    cpfind='/mnt/c/Program Files/Hugin/bin/cpfind.exe'
+    linefind='/mnt/c/Program Files/Hugin/bin/linefind.exe'
+    cpclean='/mnt/c/Program Files/Hugin/bin/cpclean.exe'
+    autooptimiser='/mnt/c/Program Files/Hugin/bin/autooptimiser.exe'
+    hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
+    exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
+    pto_lensstack='/mnt/c/Program Files/Hugin/bin/pto_lensstack.exe'
+    vig_optimize='/mnt/c/Program Files/Hugin/bin/vig_optimize.exe'
+else
+    pto_gen=$(which pto_gen)
+    pto_var=$(which pto_var)
+    pano_modify=$(which pano_modify)
+    cpfind=$(which cpfind)
+    linefind=$(which linefind)
+    cpclean=$(which cpclean)
+    autooptimiser=$(which autooptimiser)
+    hugin_executor=$(which hugin_executor)
+    exiftool=$(which exiftool)
+    pto_lensstack=$(which pto_lensstack)
+    vig_optimize=$(which vig_optimize)
+fi
 
 #use these Y/P/R variables to rotate the pano
 Yaw=0
@@ -50,6 +54,8 @@ file="${1}"
 export LC_NUMERIC=C
 awk -v max=$2 -v min=$3 '/^i/ {if(substr($5,2) > max || substr($5,2) < min) print $5 , err=1} END {exit err}' "${file}"
 }
+
+test -f apn0.jpg || exit 1
 
 "${pto_gen}" --projection=3 --fov=125 --stacklength=1 --output=autobase.pto APN0.jpg APN1.jpg APN2.jpg APN3.jpg APN4.jpg APN5.jpg
 "${pto_var}" --set=p0=-12,y0=0,p1=-12,y1=90,p2=-12,y2=180,p3=-12,y3=-90,p4=45,y4=90,p5=45,y5=-90,a=0.0248756,b=-0.033,c=0.0524907 --modify-opt -o autobase2.pto autobase.pto

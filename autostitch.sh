@@ -14,6 +14,8 @@ then
     exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
     pto_lensstack='/mnt/c/Program Files/Hugin/bin/pto_lensstack.exe'
     vig_optimize='/mnt/c/Program Files/Hugin/bin/vig_optimize.exe'
+    checkpto='/mnt/c/Program Files/Hugin/bin/checkpto.exe'
+
 else
     pto_gen=$(which pto_gen)
     pto_var=$(which pto_var)
@@ -26,6 +28,8 @@ else
     exiftool=$(which exiftool)
     pto_lensstack=$(which pto_lensstack)
     vig_optimize=$(which vig_optimize)
+    checkpto=$(which checkpto)
+
 fi
 
 #use these Y/P/R variables to rotate the pano
@@ -35,7 +39,7 @@ Roll=0
 
 Vb_Count=0
 Ev_Count=0
-Vb_max=6
+Vb_max=5
 Fov_max=130
 Fov_mini=120
 
@@ -65,6 +69,7 @@ test -f apn0.jpg || exit 1
 "${cpfind}" --prealigned --celeste --sieve1width 20 --sieve1height 20 --sieve1size 200 --kdtreesteps 300 -o default1.pto autobase5.pto
 #"${linefind}" --image=0 --image=1 --image=2 --image=3 -o default2.pto default1.pto
 "${cpclean}" -o default2.pto default1.pto
+"${checkpto}" default2.pto | grep -q 'unconnected images' && "${cpfind}" --fullscale --multirow --sieve1width=25 --sieve1height=25 --sieve1size=1000 --kdtreesteps=300 -o default1.pto default1.pto
 "${autooptimiser}" -l -n -o default3.pto default2.pto
 #"${pano_modify}" --straighten -o default5.pto default4.pto
 "${pano_modify}" --rotate=$Yaw,$Pitch,$Roll -o default5.pto default3.pto

@@ -7,7 +7,6 @@ for dir in */ ; do
     cd "${dir}"
     ./autostitch.sh
     mv final.jpg "${dir%/}".jpg
-    ls -lht
     #"${d%/}" is the directory name with the trailing "/"" removed
     cd ..
     i=$((i + 1))

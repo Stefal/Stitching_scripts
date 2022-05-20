@@ -74,12 +74,12 @@ sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
 sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 -o default5.pto default5.pto
 "${vig_optimize}" -o default5.pto default5.pto
-"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto default5.pto
+"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto default5.pto
 #Try to fix lens exposure when Vb is too high
 while ! check_Vb final.pto $Vb_max $((-Vb_max))
 do
     "${vig_optimize}" -o final.pto final.pto
-    "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto final.pto
+    "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto final.pto
     ((Vb_Count=Vb_Count+1))
     touch please_check_mini
     echo 'Vb_Count: ' $Vb_Count

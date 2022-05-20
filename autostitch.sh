@@ -95,7 +95,7 @@ do
             touch please_check_high
         fi
         "${vig_optimize}" -o final.pto final.pto
-        "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13340x6670 -o final.pto final.pto
+        "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto final.pto
         ((Vb_max=Vb_max+1))
         ((Ev_Count=Ev_Count+1))
     fi

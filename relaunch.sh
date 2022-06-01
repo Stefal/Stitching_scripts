@@ -1,4 +1,7 @@
 #!/bin/bash
+DELAY=$1
+[[ -z $DELAY ]] && echo 'Please enter a delay like '\''1 hour ago'\' && exit 1
+
 if [ $(uname -r | sed -n 's/.*\( *Microsoft *\).*/\1/ip') ];
 then
     pto_gen='/mnt/c/Program Files/Hugin/bin/pto_gen.exe'
@@ -28,18 +31,22 @@ else
     checkpto=$(which checkpto)
 fi
 
-i=1
+i=0
 
-for dir in $(find . -maxdepth 2 -type f -name "final.pto" -newermt '2 hour ago') ; do
+for dir in $(find . -maxdepth 2 -type f -name "final.pto" -newermt "${DELAY}") ; do
     echo $(dirname $dir)
-    cd $(dirname $dir)
-    "${hugin_executor}" final.pto --stitching
-    "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
-	newname=$(dirname $dir | cut -c3-)
-    mv final.jpg "${newname}".jpg
-    #"${d%/}" is the directory name with the trailing "/"" removed
-    cd ..
-    i=$((i + 1))
+    if [ "$2" = '--stitch' ]
+        then
+        cd $(dirname $dir)
+        "${hugin_executor}" final.pto --stitching
+        "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
+        newname=$(dirname $dir | cut -c3-)
+        mv final.jpg "${newname}".jpg
+        #"${d%/}" is the directory name with the trailing "/"" removed
+        cd ..
+        i=$((i + 1))
+    fi
+    
 done
 echo $i 'folders managed'
-echo $(find . -maxdepth 2 -type f -name "*.jpg" -newermt '1 day ago' | wc -l) 'pano created'
+echo $(find . -maxdepth 2 -type f -name "*.jpg" -newermt "${DELAY}" | wc -l) 'pano created'

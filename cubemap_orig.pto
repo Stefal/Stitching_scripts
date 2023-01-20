@@ -1,0 +1,8 @@
+p E0 R0 f0 h2640 n"JPEG_m" u0 v90 w2640
+m g1 i0 m2 p0.00784314
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p0 r0 v360 w10560 y0
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p0 r0 v360 w10560 y-90
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p0 r0 v360 w10560 y180
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p0 r0 v360 w10560 y90
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p-90 r0 v360 w10560 y0
+i a0 b0 c0 d0 e0 f4 h5280 n"orig-pano.jpg" p90 r0 v360 w10560 y0

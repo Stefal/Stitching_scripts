@@ -3,42 +3,48 @@
 # Detect if we use WSL. If yes, use the Hugin windows release
 if [ $(uname -r | sed -n 's/.*\( *Microsoft *\).*/\1/ip') ];
 then
-    pto_gen='/mnt/c/Program Files/Hugin/bin/pto_gen.exe'
-    pto_var='/mnt/c/Program Files/Hugin/bin/pto_var.exe'
-    pano_modify='/mnt/c/Program Files/Hugin/bin/pano_modify.exe'
-    cpfind='/mnt/c/Program Files/Hugin/bin/cpfind.exe'
-    linefind='/mnt/c/Program Files/Hugin/bin/linefind.exe'
-    cpclean='/mnt/c/Program Files/Hugin/bin/cpclean.exe'
-    autooptimiser='/mnt/c/Program Files/Hugin/bin/autooptimiser.exe'
-    hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
-    exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
-    pto_lensstack='/mnt/c/Program Files/Hugin/bin/pto_lensstack.exe'
-    vig_optimize='/mnt/c/Program Files/Hugin/bin/vig_optimize.exe'
-    checkpto='/mnt/c/Program Files/Hugin/bin/checkpto.exe'
+    export pto_gen='/mnt/c/Program Files/Hugin/bin/pto_gen.exe'
+    export pto_var='/mnt/c/Program Files/Hugin/bin/pto_var.exe'
+    export pano_modify='/mnt/c/Program Files/Hugin/bin/pano_modify.exe'
+    export cpfind='/mnt/c/Program Files/Hugin/bin/cpfind.exe'
+    export linefind='/mnt/c/Program Files/Hugin/bin/linefind.exe'
+    export cpclean='/mnt/c/Program Files/Hugin/bin/cpclean.exe'
+    export autooptimiser='/mnt/c/Program Files/Hugin/bin/autooptimiser.exe'
+    export hugin_executor='/mnt/c/Program Files/Hugin/bin/hugin_executor.exe'
+    export exiftool='/mnt/c/Photos_OSM/exiftool/exiftool.exe'
+    export pto_lensstack='/mnt/c/Program Files/Hugin/bin/pto_lensstack.exe'
+    export vig_optimize='/mnt/c/Program Files/Hugin/bin/vig_optimize.exe'
+    export checkpto='/mnt/c/Program Files/Hugin/bin/checkpto.exe'
 else
-    pto_gen=$(which pto_gen)
-    pto_var=$(which pto_var)
-    pano_modify=$(which pano_modify)
-    cpfind=$(which cpfind)
-    linefind=$(which linefind)
-    cpclean=$(which cpclean)
-    autooptimiser=$(which autooptimiser)
-    hugin_executor=$(which hugin_executor)
-    exiftool=$(which exiftool)
-    pto_lensstack=$(which pto_lensstack)
-    vig_optimize=$(which vig_optimize)
-    checkpto=$(which checkpto)
+    export pto_gen=$(which pto_gen)
+    export pto_var=$(which pto_var)
+    export pano_modify=$(which pano_modify)
+    export cpfind=$(which cpfind)
+    export linefind=$(which linefind)
+    export cpclean=$(which cpclean)
+    export autooptimiser=$(which autooptimiser)
+    export hugin_executor=$(which hugin_executor)
+    export exiftool=$(which exiftool)
+    export pto_lensstack=$(which pto_lensstack)
+    export vig_optimize=$(which vig_optimize)
+    export checkpto=$(which checkpto)
 fi
 
 #use these Y/P/R variables to rotate the pano
-Yaw=0
-Pitch=0
-Roll=0
-Vb_Count=0
-Ev_Count=0
-Vb_max=5
-Fov_max=130
-Fov_mini=120
+export Yaw=-8
+export Pitch=3
+export Roll=4
+export Vb_Count=0
+export Ev_Count=0
+export Vb_max=5
+export Fov_max=130
+export Fov_mini=120
+export Pano_size='13000x6500'
+#export Pano_size='4000x2000'
+
+# check if we are being sourced by another script or shell
+[[ "${#BASH_SOURCE[@]}" -gt "1" ]] && { return 0; }
+# --- Begin Code Execution Section ---
 
 check_Vb() {
 # Check if the Vb value in the final.pto file is too high or too low
@@ -74,12 +80,12 @@ sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
 sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 -o default5.pto default5.pto
 "${vig_optimize}" -o default5.pto default5.pto
-"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto default5.pto
+"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto default5.pto
 #Try to fix lens exposure when Vb is too high
 while ! check_Vb final.pto $Vb_max $((-Vb_max))
 do
     "${vig_optimize}" -o final.pto final.pto
-    "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto final.pto
+    "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto final.pto
     ((Vb_Count=Vb_Count+1))
     touch please_check_mini
     echo 'Vb_Count: ' $Vb_Count
@@ -95,7 +101,7 @@ do
             touch please_check_high
         fi
         "${vig_optimize}" -o final.pto final.pto
-        "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=13000x6500 -o final.pto final.pto
+        "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto final.pto
         ((Vb_max=Vb_max+1))
         ((Ev_Count=Ev_Count+1))
     fi

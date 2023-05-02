@@ -33,9 +33,9 @@ else
 fi
 
 #use these Y/P/R variables to rotate the pano
-export Yaw=-8
+export Yaw=0
 export Pitch=0
-export Roll=0
+export Roll=-1
 export Vb_Count=0
 export Ev_Count=0
 export Vb_max=5

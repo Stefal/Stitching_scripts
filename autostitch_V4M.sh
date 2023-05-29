@@ -31,9 +31,9 @@ else
 fi
 
 #use these Y/P/R variables to rotate the pano
-export Yaw=-8
-export Pitch=3
-export Roll=4
+export Yaw=0
+export Pitch=0
+export Roll=0
 export Vb_Count=0
 export Ev_Count=0
 export Vb_max=5
@@ -107,5 +107,5 @@ do
     fi
 done
 check_Fov final.pto $Fov_max $Fov_min || touch check_fov
-"${hugin_executor}" final.pto --stitching
+"${hugin_executor}" final.pto --stitching --prefix=final
 "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V4MPack final.jpg -overwrite_original

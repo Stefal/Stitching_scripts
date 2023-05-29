@@ -1,14 +1,19 @@
 #!/bin/bash
 STITCHING_SCRIPT="${1}" || 'autostitch.sh'
+IMG_PATH="${2}"
 S_PATH="$(realpath "$(dirname $0)")"
-i=1
-for dir in */ ; do
-    cp "${S_PATH}"/"${STITCHING_SCRIPT}" "${dir}"/"${STITCHING_SCRIPT}"
+i=0
+for dir in "${IMG_PATH}"*/ ; do
+   #dir=$(realpath "${dir}")
+   #echo 'dir: ' "${dir}"
+   #echo 'dest: ' "${dir}""${STITCHING_SCRIPT}"
+    cp "${S_PATH}"/"${STITCHING_SCRIPT}" "${dir}""${STITCHING_SCRIPT}"
     cd "${dir}"
     ./"${STITCHING_SCRIPT}"
-    mv final.jpg "${dir%/}".jpg
+    mv final.jpg "$(basename "$(pwd)")".jpg
+   #echo "$(basename "$(pwd)")".jpg 
     #"${d%/}" is the directory name with the trailing "/"" removed
-    cd ..
+    cd "${S_PATH}"
     i=$((i + 1))
 done
 echo $i 'folders managed'

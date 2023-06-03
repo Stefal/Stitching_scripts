@@ -62,6 +62,13 @@ export LC_NUMERIC=C
 awk -v max=$2 -v min=$3 '/^i/ {if(substr($5,2) > max || substr($5,2) < min) print $5 , err=1} END {exit err}' "${file}"
 }
 
+check_Roll() {
+# Check if the Roll value is too low or too high, meaning there is a problem in the pano (rotation).
+file="${1}"
+export LC_NUMERIC=C
+awk -r max=$2 -r min=$3 '/^i/ {if(substr($5,2) > max || substr($5,2) < min) print $5 , err=1} END {exit err}' "${file}"
+}
+
 test -f apn0.jpg || exit 1
 
 "${pto_gen}" --projection=3 --fov=125 --stacklength=1 --output=autobase.pto APN0.jpg APN1.jpg APN2.jpg APN3.jpg
@@ -78,6 +85,8 @@ test -f apn0.jpg || exit 1
 "${pano_modify}" --rotate=$Yaw,$Pitch,$Roll -o default5.pto default3.pto
 sed -i '/#hugin_blender enblend/c\#hugin_blender internal' default5.pto
 sed -i '/#hugin_verdandiOptions/c\#hugin_verdandiOptions --seam=blend' default5.pto
+sed -i '/#hugin_edgeFillMode/c\#hugin_edgeFillMode 1' default5.pto
+sed -i '/#hugin_edgeFillKeepInput/c\#hugin_edgeFillKeepInput false' default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 -o default5.pto default5.pto
 "${vig_optimize}" -o default5.pto default5.pto
 "${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto default5.pto
@@ -107,5 +116,6 @@ do
     fi
 done
 check_Fov final.pto $Fov_max $Fov_min || touch check_fov
+check_Roll final.pto 15 15 || touch check_fov
 "${hugin_executor}" final.pto --stitching --prefix=final
 "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V4MPack final.jpg -overwrite_original

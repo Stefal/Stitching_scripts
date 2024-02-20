@@ -1,6 +1,11 @@
 #!/bin/bash
-DELAY=$1
+#TODO manage dir/file with spaces in name
+S_PATH="$(realpath "$(dirname $0)")"
+IMG_PATH="${1}"
+DELAY=$2
+RESTITCH=$3
 [[ -z $DELAY ]] && echo 'Please enter a delay like '\''1 hour ago'\' && exit 1
+N=4
 
 if [ $(uname -r | sed -n 's/.*\( *Microsoft *\).*/\1/ip') ];
 then
@@ -31,22 +36,29 @@ else
     checkpto=$(which checkpto)
 fi
 
-i=0
+stitch_task () {
+	cd $(dirname "$1")
+    "${hugin_executor}" final.pto --stitching --prefix=final && i=$((i + 1))
+    "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
+    ##newname=$(dirname $dir | cut -c3-)
+    mv final.jpg "$(basename "$(pwd)")".jpg
+	echo 'in dir: ' $(pwd)
+}
 
-for dir in $(find . -maxdepth 2 -type f -name "final.pto" -newermt "${DELAY}") ; do
-    echo $(dirname $dir)
-    if [ "$2" = '--stitch' ]
+i=0
+j=0
+
+for dir in $(find "${IMG_PATH}" -maxdepth 5 -type f -name "final.pto" -newermt "${DELAY}") ; do
+    echo 'directory: ' $(dirname "${dir}")
+    if [ "${RESTITCH}" = '--stitch' ]
         then
-        cd $(dirname $dir)
-        "${hugin_executor}" final.pto --stitching
-        "${exiftool}" -TagsFromFile APN0.jpg -DateTimeOriginal -SubSecTimeOriginal -Make=STFMANI -Model=V6MPack final.jpg -overwrite_original
-        newname=$(dirname $dir | cut -c3-)
-        mv final.jpg "${newname}".jpg
-        #"${d%/}" is the directory name with the trailing "/"" removed
-        cd ..
-        i=$((i + 1))
+        ((t=t%N)); ((t++==0)) && wait
+        stitch_task "${dir}" &
+        cd "${S_PATH}"
     fi
+    j=$((j + 1))
     
 done
-echo $i 'folders managed'
-echo $(find . -maxdepth 2 -type f -name "*.jpg" -newermt "${DELAY}" | wc -l) 'pano created'
+echo $i 'pano restitched'
+echo $j 'directory managed'
+#echo $(find "${IMG_PATH}" -maxdepth 2 -type f -name "*.jpg" -newermt "${DELAY}" | wc -l) 'pano found'

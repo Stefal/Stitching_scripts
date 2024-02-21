@@ -7,7 +7,7 @@ for dir in "${IMG_PATH}"*/ ; do
    #dir=$(realpath "${dir}")
    #echo 'dir: ' "${dir}"
    #echo 'dest: ' "${dir}""${STITCHING_SCRIPT}"
-    cp "${S_PATH}"/"${STITCHING_SCRIPT}" "${dir}""${STITCHING_SCRIPT}"
+    cp "${S_PATH}"/"${STITCHING_SCRIPT}" "${dir}"/"${STITCHING_SCRIPT}"
     cd "${dir}"
     ./"${STITCHING_SCRIPT}"
     mv final.jpg "$(basename "$(pwd)")".jpg

@@ -73,10 +73,10 @@ awk -v max=$2 -v min=$3 '/^i/ {if(substr($14,2,4)+0 > max || substr($14,2,4)+0 <
 
 test -f APN0.jpg || exit 1
 
-"${vig_optimize}" -o autobase5.pto template.pto
-"${autooptimiser}" -l -n -o default3.pto default5.pto
-"${vig_optimize}" -o default5.pto default5.pto
-"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto default5.pto
+"${vig_optimize}" -o base.pto template.pto
+"${autooptimiser}" -l -n -o base.pto base.pto
+"${vig_optimize}" -o base.pto base.pto
+"${pano_modify}" --output-exposure=AUTO --output-range-compression=1 --ldr-file=JPG --ldr-compression=90 --canvas=$Pano_size -o final.pto base.pto
 #Try to fix lens exposure when Vb is too high
 #while ! check_Vb final.pto $Vb_max $((-Vb_max))
 #do
